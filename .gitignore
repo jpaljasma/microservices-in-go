@@ -23,3 +23,11 @@ go.work.sum
 
 # env file
 .env
+
+# Mac-specific
+.DS_Store
+
+# any bin folder at any level
+**/bin/*
+# but allow markdown
+!**/bin/*.md
