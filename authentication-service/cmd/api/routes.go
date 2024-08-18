@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
+// routes() applies to app Config and returns a http.Handler
 func (app *Config) routes() http.Handler {
 	mux := chi.NewRouter()
 
@@ -25,10 +26,15 @@ func (app *Config) routes() http.Handler {
 	mux.Use(middleware.Heartbeat("/ping"))
 
 	// specify some routes
-	mux.Get("/", app.Index)
-	mux.Post("/", app.Broker)
+	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Hi from index"))
+	})
 
-	mux.Post("/handle", app.HandleSubmission)
+	// authentication post endpoint
+	mux.Post("/authenticate", app.Authenticate)
 
 	return mux
+
 }

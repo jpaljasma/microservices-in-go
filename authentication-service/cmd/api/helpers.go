@@ -31,7 +31,7 @@ func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) er
 	// ensure there's only a single json valye
 	err = dec.Decode(&struct{}{})
 	if err != io.EOF {
-		return errors.New("Body must have only a single JSON value")
+		return errors.New("body must have only a single json value")
 	}
 
 	return nil
@@ -71,7 +71,7 @@ func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) er
 
 	var payload jsonResponse
 	payload.Error = true
-	payload.Timestamp = time.Now().UTC().String()
+	payload.Timestamp = time.UTC.String()
 	payload.Message = err.Error()
 
 	return app.writeJSON(w, statusCode, payload)

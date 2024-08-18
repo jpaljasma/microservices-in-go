@@ -8,6 +8,7 @@
                 <hr>
 
                 <button id="brokerBtn" class="btn btn-outline-secondary" label="Test">Test Broker</button>
+                <button id="authBtn" class="btn btn-secondary" label="Test">Test Auth</button>
 
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
@@ -34,11 +35,55 @@
 {{define "js"}}
     <script>
         let brokerBtn = document.getElementById('brokerBtn');
+        let authBtn = document.getElementById('authBtn');
         let output = document.getElementById('output');
         let sent = document.getElementById('payload');
         let received = document.getElementById('received');
         
+        authBtn.addEventListener('click', function(){
+
+            this.classList.add('disabled');
+
+            const payload = {
+                action: "auth",
+                auth: {
+                    email: "admin@example.com",
+                    password: "verysecret",
+                },
+            }
+
+            const headers = new Headers()
+            headers.append("Content-Type", "application/json")
+
+            const body = {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: headers
+            }
+            
+            sent.innerHTML = JSON.stringify(payload, undefined, 4)
+                
+            fetch("http:\/\/localhost:8080/handle", body)
+            .then((response) => response.json())
+            .then((data)=>{
+                // nicely formatted JSON
+                received.innerHTML = JSON.stringify(data, undefined, 4)
+                if(data.error) {
+                    output.innerHTML += `<br><strong>Error</strong>: ${data.message}`;
+                } else {
+                    output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
+                }
+            })
+            .catch((error)=>{
+                output.innerHTML += `<br><br>Error: ${error}`
+            });
+
+            this.classList.remove('disabled');
+        });
+
         brokerBtn.addEventListener('click', function(){
+
+            this.classList.add('disabled');
 
             const body = {
                 method: 'POST',
@@ -59,6 +104,9 @@
             .catch((error)=>{
                 output.innerHTML += `<br><br>Error: ${error}`
             });
+
+            this.classList.remove('disabled');
+
         });
     </script>
 {{end}}

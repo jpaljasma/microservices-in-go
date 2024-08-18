@@ -31,3 +31,6 @@ go.work.sum
 **/bin/*
 # but allow markdown
 !**/bin/*.md
+
+# skip postgresql data
+/db-data/postgres/
