@@ -9,6 +9,7 @@
 
                 <button id="brokerBtn" class="btn btn-outline-secondary" label="Test">Test Broker</button>
                 <button id="authBtn" class="btn btn-secondary" label="Test">Test Auth</button>
+                <button id="logBtn" class="btn btn-secondary" label="Test">Test Log</button>
 
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
@@ -36,22 +37,13 @@
     <script>
         let brokerBtn = document.getElementById('brokerBtn');
         let authBtn = document.getElementById('authBtn');
+        let logBtn = document.getElementById('logBtn');
         let output = document.getElementById('output');
         let sent = document.getElementById('payload');
         let received = document.getElementById('received');
         
-        authBtn.addEventListener('click', function(){
-
-            this.classList.add('disabled');
-
-            const payload = {
-                action: "auth",
-                auth: {
-                    email: "admin@example.com",
-                    password: "verysecret",
-                },
-            }
-
+        function handleRequest(payload, btn) {
+            btn.classList.add('disabled');
             const headers = new Headers()
             headers.append("Content-Type", "application/json")
 
@@ -60,7 +52,6 @@
                 body: JSON.stringify(payload),
                 headers: headers
             }
-            
             sent.innerHTML = JSON.stringify(payload, undefined, 4)
                 
             fetch("http:\/\/localhost:8080/handle", body)
@@ -76,9 +67,36 @@
             })
             .catch((error)=>{
                 output.innerHTML += `<br><br>Error: ${error}`
+            })
+            .finally(()=>{
+                btn.classList.remove('disabled')
             });
+        }
 
-            this.classList.remove('disabled');
+        logBtn.addEventListener('click', function(){
+            const payload = {
+                action: "log",
+                log: {
+                    name: "microservices",
+                    data: "... in go!",
+                },
+            }
+
+            handleRequest(payload, this)
+        });
+
+        authBtn.addEventListener('click', function(){
+
+            const payload = {
+                action: "auth",
+                auth: {
+                    email: "admin@example.com",
+                    password: "verysecret",
+                },
+            }
+
+            handleRequest(payload, this);
+
         });
 
         brokerBtn.addEventListener('click', function(){

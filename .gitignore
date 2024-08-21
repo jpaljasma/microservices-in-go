@@ -34,3 +34,6 @@ go.work.sum
 
 # skip postgresql data
 /db-data/postgres/
+
+# skip mongo
+/db-data/mongo/
