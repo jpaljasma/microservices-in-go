@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 )
 
 type Config struct {
@@ -13,20 +11,30 @@ const webPort = "80"
 
 func main() {
 
-	app := Config{}
+	msg := Message{}
+	msg.From = EmailContact{Name: "John", Email: "test@test.com"}
 
-	log.Printf("Starting mail service on port %s\n", webPort)
-
-	// define http server
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
-	}
-
-	// start webserver
-	err := srv.ListenAndServe()
+	mail := &Mail{}
+	err := mail.SendSMTPMessage(msg)
 	if err != nil {
 		log.Panic(err)
 	}
+	return
+
+	// app := Config{}
+
+	// log.Printf("Starting mail service on port %s\n", webPort)
+
+	// // define http server
+	// srv := &http.Server{
+	// 	Addr:    fmt.Sprintf(":%s", webPort),
+	// 	Handler: app.routes(),
+	// }
+
+	// // start webserver
+	// err := srv.ListenAndServe()
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
 
 }
