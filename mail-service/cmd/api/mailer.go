@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"log"
 	"time"
@@ -45,15 +46,21 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 
 	data := map[string]any{
 		"message": msg.Data,
+		"name":    msg.To.Name,
 	}
 
 	msg.DataMap = data
+
+	// Allow HTML formatting in the message
+	msg.DataMap["message"] = template.HTML(fmt.Sprintf("%v", msg.DataMap["message"]))
 
 	htmlMessage, err := m.buildHTMLMessage(msg)
 	if err != nil {
 		log.Panic(err)
 		return err
 	}
+
+	msg.DataMap = data
 
 	textMessage, err := m.buildPlainTextMessage(msg)
 	if err != nil {
@@ -81,8 +88,8 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	}
 
 	email := mail.NewMSG()
-	email.SetFrom(msg.From.Email).
-		AddTo(msg.To.Email).
+	email.SetFrom(fmt.Sprintf("%s <%s>", msg.From.Name, msg.From.Email)).
+		AddTo(fmt.Sprintf("%s <%s>", msg.To.Name, msg.To.Email)).
 		SetSubject(msg.Subject)
 	email.SetBody(mail.TextPlain, textMessage)
 	email.AddAlternative(mail.TextHTML, htmlMessage)
